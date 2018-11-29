@@ -1,6 +1,7 @@
 ## The Plaground for Invocation Flow Context Propagation via Async\_HOOK
 
-This is just a simple PoC project, please keep in mind, the events provided by Async\_Hook is based on async resource lifecycle, it does not provides a standard way to tell how to restore a invocation cntext correctly, especially, if you are implementing a custom task queue or a connection pool which is prone to break context storage.
+This is just a investigation project to seek for a stable solution for context progation in node.js. 
+
 
 ### Run the sample
 
@@ -31,7 +32,7 @@ router:policy:logger [Exit] resource-path: </test/ctx/propagation>; protocol: <h
 router:policy:logger [HTTP-Exit] resource-path: </test/ctx/propagation>; method: <GET>; statusCode: <200>; headers: <{"user-agent":"curl/7.35.0","host":"localhost:8080","accept":"*/*"}>; user: <-> @2018-11-29T05:34:52.975Z +1ms
 ```
 
-If we have a handle pool or a glable async resource, the context propagation will be broken then:
+If we have a async-resource used in the across-invocation-flow situation , the context propagation will be broken then:
 
 ```
 curl http://localhost:8080/test/ctx/breaker
@@ -49,3 +50,8 @@ router:policy:logger [Entry] resource-path: </test/ctx/breaker>; protocol: <http
 router:policy:logger [Exit] resource-path: </test/ctx/breaker>; protocol: <http>; method: <GET>; statusCode: <200>; user: <->; middleware-fn: <test-context-breaker> @2018-11-29T07:27:02.705Z +502ms
 router:policy:logger [HTTP-Exit] resource-path: </test/ctx/breaker>; method: <GET>; statusCode: <200>; headers: <{"user-agent":"curl/7.35.0","host":"localhost:8080","accept":"*/*"}>; user: <-> @2018-11-29T07:27:02.705Z +0ms
 ```
+
+> Please keep in mind, the events provided by Async\_Hook is based on async resource lifecycle. 
+>
+> Some insights from [Strongloop](https://strongloop.com/strongblog/context-propagation-in-loopback/)
+> "There is no official and standard way for modules to tell AsyncWrap/CLS when and how to correctly restore the continuation context, As a result, any module that implements a custom task queue or a connection pool is prone to break context storage. "

@@ -51,7 +51,7 @@ router:policy:logger [Exit] resource-path: </test/ctx/breaker>; protocol: <http>
 router:policy:logger [HTTP-Exit] resource-path: </test/ctx/breaker>; method: <GET>; statusCode: <200>; headers: <{"user-agent":"curl/7.35.0","host":"localhost:8080","accept":"*/*"}>; user: <-> @2018-11-29T07:27:02.705Z +0ms
 ```
 
-> Please keep in mind, the events provided by Async\_Hook is based on async resource lifecycle. 
 >
 > Some insights from [Strongloop](https://strongloop.com/strongblog/context-propagation-in-loopback/)
+>
 > "There is no official and standard way for modules to tell AsyncWrap/CLS when and how to correctly restore the continuation context, As a result, any module that implements a custom task queue or a connection pool is prone to break context storage. "

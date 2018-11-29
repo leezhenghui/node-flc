@@ -52,7 +52,14 @@ const cm = (function() {
 	class ContextManager {
 
 		initContext() {
-	    contextSlots.set(AsyncHooks.executionAsyncId(), new Context());	
+			const self = this;
+			if (self.getContext()) {
+				const err = new Error('Context was attached to current invocation flow!');
+				debug('Error: ', err);
+				throw err;
+			}
+
+			contextSlots.set(AsyncHooks.executionAsyncId(), new Context());	
 		}
 
 		getContext() {

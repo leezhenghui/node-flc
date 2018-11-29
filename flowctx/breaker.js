@@ -7,10 +7,9 @@ class AsyncContextBreaker extends AsyncHooks.AsyncResource {
 	}
 
 	action(callback) {
+		const self = this;
 		setTimeout(() => {
-			this.emitBefore();
-			callback(null, ++this.count);
-			this.emitAfter();
+			self.runInAsyncScope(callback, null, self.count);
 		}, 500);
 	}
 

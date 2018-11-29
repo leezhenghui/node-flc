@@ -8,6 +8,7 @@ const Q = require('q');
 const PolicyRouter = require('express-policyrouter').PolicyRouter;
 const policyRouter = new PolicyRouter(router);
 const cm = require('../flowctx/cm');
+const AsyncContextBreaker = require('../flowctx/breaker');
 
 //====================================
 //   Policy Handlers Registraiton
@@ -47,6 +48,21 @@ policyRouter.get('/test/ctx/propagation', async function(req, res, next) {
   res.status(200).send('done' );
 }, {
   name: 'test-context-propagation'
+});
+
+let breaker;
+policyRouter.get('/test/ctx/breaker', function(req, res, next) {
+	console.log('      >>> [Initialed Context]: ', cm.getContext().uuid);
+	if (! breaker) {
+    breaker = new AsyncContextBreaker();	
+	}
+
+	breaker.action(function() {
+    console.log('      >>> [Propagated Context]: ', cm.getContext().uuid);	
+		res.status(200).send('done' );
+	});
+}, {
+  name: 'test-context-breaker'
 });
 
 module.exports = router;

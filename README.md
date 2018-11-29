@@ -1,5 +1,7 @@
 ## Invocation Flow Context Propagation via Async\_HOOK
 
+This is just a simple PoC project, please keep in mind, the events provided by Async\_Hook is based on async resource lifecycle, it does not provides a standard way to tell how to restore a invocation cntext correctly, especially, if you are implementing a custom task queue or a connection pool which is prone to break context storage.
+
 ### Run the sample
 
 - Clone the project
@@ -29,3 +31,21 @@ router:policy:logger [Exit] resource-path: </test/ctx/propagation>; protocol: <h
 router:policy:logger [HTTP-Exit] resource-path: </test/ctx/propagation>; method: <GET>; statusCode: <200>; headers: <{"user-agent":"curl/7.35.0","host":"localhost:8080","accept":"*/*"}>; user: <-> @2018-11-29T05:34:52.975Z +1ms
 ```
 
+If we have a handle pool or a glable async resource, the context propagation will be broken then:
+
+```
+curl http://localhost:8080/test/ctx/breaker
+```
+
+```
+router:policy:logger [HTTP-Entry] resource-path: </test/ctx/breaker>; method: <GET>; headers: <{"user-agent":"curl/7.35.0","host":"localhost:8080","accept":"*/*"}> @2018-11-29T07:27:02.203Z +4s
+router:policy:logger [Entry] resource-path: </test/ctx/breaker>; protocol: <http>; method: <GET>; user: <->; middleware-fn: <httpSetting.bodyParser.json> @2018-11-29T07:27:02.203Z +0ms
+body-parser:json skip empty body +4s
+router:policy:logger [Exit] resource-path: </test/ctx/breaker>; protocol: <http>; method: <GET>; statusCode: <200>; user: <->; middleware-fn: <httpSetting.bodyParser.json> @2018-11-29T07:27:02.203Z +0ms
+policyrouter The res.end has been wrapped, no need to wrap it! +4s
+router:policy:logger [Entry] resource-path: </test/ctx/breaker>; protocol: <http>; method: <GET>; user: <->; middleware-fn: <test-context-breaker> @2018-11-29T07:27:02.203Z +0ms
+>>> [Initialed Context]:  a91b0c73-63ef-4c2b-a027-8372754282a3
+>>> [Propagated Context]:  5774fd81-04e0-4de4-8843-8efc2909df04
+router:policy:logger [Exit] resource-path: </test/ctx/breaker>; protocol: <http>; method: <GET>; statusCode: <200>; user: <->; middleware-fn: <test-context-breaker> @2018-11-29T07:27:02.705Z +502ms
+router:policy:logger [HTTP-Exit] resource-path: </test/ctx/breaker>; method: <GET>; statusCode: <200>; headers: <{"user-agent":"curl/7.35.0","host":"localhost:8080","accept":"*/*"}>; user: <-> @2018-11-29T07:27:02.705Z +0ms
+```

@@ -5,7 +5,7 @@
 - Clone the project
 
 ```bash
-git clone git@github.com:leezhenghui/node-flowcontext-prototype.git
+git clone git@github.com:leezhenghui/node-flc.git
 ```
 
 - Run the sample
